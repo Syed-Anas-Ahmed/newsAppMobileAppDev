@@ -2,10 +2,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Entypo, FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { ToastAndroid } from 'react-native';
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
+import AccountScreen from './screens/Account';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 
@@ -24,6 +25,12 @@ const SearchStack = () => (
   </Stack.Navigator>
 );
 
+const AccountStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Profile" component={AccountScreen} />
+  </Stack.Navigator>
+);
+
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={{
@@ -31,17 +38,24 @@ const TabNavigator = () => (
     }}
   >
     <Tab.Screen
-      name="HomeStack"
+      name="Feeds"
       component={HomeStack}
       options={{
         tabBarIcon: () => <Entypo name="home" size={24} color="black" />,
       }}
     />
     <Tab.Screen
-      name="SearchStack"
+      name="Search News"
       component={SearchStack}
       options={{
         tabBarIcon: () => <FontAwesome name="search" size={24} color="black" />,
+      }}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={AccountStack}
+      options={{
+        tabBarIcon: () => <MaterialIcons name="face" size={24} color="black" />,
       }}
     />
   </Tab.Navigator>

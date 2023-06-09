@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import axios from 'axios';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (username === 'Anas' && password === 'anas123') {
-      // Successful login, navigate to HomeScreen
+  const handleLogin = async () => {
+    if (!email || !password) {
+      ToastAndroid.show("Please Fill all the Feilds", ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post("http://192.168.100.67:8080/api/users/login", {
+        email, password
+      }, config);
+
+      ToastAndroid.show("User Login Successfully", ToastAndroid.SHORT);
+
+      // localStorage.setItem("userInfo", JSON.stringify(data));
+      // await AsyncStorage.setItem('userData', JSON.stringify(data));
       navigation.navigate('Home');
-    } else {
-      // Incorrect login details, show toast message
-      ToastAndroid.show('Incorrect login details', ToastAndroid.SHORT);
+
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data?.msg) {
+        ToastAndroid.show(error.response.data?.msg, ToastAndroid.SHORT);
+      } else {
+        ToastAndroid.show(error.response.data?.msg, ToastAndroid.SHORT);
+      }
     }
   };
 
@@ -24,9 +47,9 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.heading}>Login Screen</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}

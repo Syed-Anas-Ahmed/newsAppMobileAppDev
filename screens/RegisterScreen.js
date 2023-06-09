@@ -1,12 +1,50 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import axios from 'axios';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     // Perform registration logic here
+    if (!username || !email || !password) {
+      // Incorrect login details, show toast message
+      ToastAndroid.show("Please Fill All The Fields", ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        }
+      };
+
+      console.log(username);
+      // const { data } = 
+      await axios.post("http://192.168.100.67:8080/api/users", {
+        name: username,
+        email: email,
+        password: password
+      }, config);
+      ToastAndroid.show("User Has been Registered Successfully", ToastAndroid.SHORT)
+
+      // set User in local Storage
+      // localStorage.setItem("userInfo", JSON.stringify(data));
+      navigation.navigate('Home');
+
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data?.msg) {
+        ToastAndroid.show(error.response.data?.msg, ToastAndroid.SHORT);
+      } else {
+        ToastAndroid.show(error.response.data?.msg, ToastAndroid.SHORT);
+      }
+    }
+  };
+
+  const handleLogin = () => {
+    navigation.navigate('Login');
   };
 
   return (
@@ -16,17 +54,26 @@ const RegisterScreen = ({ navigation }) => {
         style={styles.input}
         placeholder="Username"
         value={username}
-        onChangeText={setUsername}
+        onChangeText={text => setUsername(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={text => setEmail(text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
         secureTextEntry={true}
         value={password}
-        onChangeText={setPassword}
+        onChangeText={text => setPassword(text)}
       />
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogin}>
+        <Text style={styles.registerText}>Already have an account? Login</Text>
       </TouchableOpacity>
     </View>
   );
@@ -66,5 +113,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  registerText: {
+    fontSize: 16,
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
